@@ -1,0 +1,17 @@
+# Secretos
+.env
+
+# Backend
+backend/target/
+*.iml
+.idea/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# SO / editores
+.DS_Store
+Thumbs.db
+.vscode/
+*.tsbuildinfo

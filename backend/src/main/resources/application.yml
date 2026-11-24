@@ -1,0 +1,79 @@
+spring:
+  application:
+    name: pedidos
+  profiles:
+    default: local
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: ${PORT:8080}
+  error:
+    include-message: always
+
+app:
+  jwt:
+    # Solo para desarrollo. En producción se debe definir JWT_SECRET (mínimo 32 caracteres).
+    secret: ${JWT_SECRET:dev-only-secret-change-me-please-0123456789abcdef}
+    expiration-minutes: ${JWT_EXPIRATION_MINUTES:480}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5176}
+  shipping:
+    # Envío estándar y umbral de envío gratis (MXN). Siempre se calcula en el backend.
+    flat-rate: ${SHIPPING_FLAT_RATE:99.00}
+    free-from: ${SHIPPING_FREE_FROM:1500.00}
+  orders:
+    max-quantity-per-item: ${MAX_QUANTITY_PER_ITEM:20}
+  seed:
+    # Carga catálogo, cuentas y pedidos ficticios si la base está vacía.
+    enabled: ${SEED_DEMO_DATA:true}
+    demo-password: ${DEMO_PASSWORD:Demo1234!}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+  api-docs:
+    path: /v3/api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:h2:mem:pedidos;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/pedidos}
+    username: ${DB_USERNAME:pedidos}
+    password: ${DB_PASSWORD}
